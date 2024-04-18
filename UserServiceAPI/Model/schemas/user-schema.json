@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "User",
+    "properties": {
+      "identifier": {
+        "type": "string",
+        "description": "User identification",
+        "format": "text"
+      },
+      "givenName": {
+        "type": "string",
+        "description": "User's given name",
+        "format": "text"
+      },
+      "familyName": {
+        "type": "string",
+        "description": "User's surname",
+        "format": "text"
+      },
+      "department": {
+        "type": "string",
+        "description": "User's department",
+        "format": "text"
+      },
+      "password": {
+        "type": "string",
+        "description": "User's password",
+        "format": "password"
+      },
+      "email": {
+        "type": "string",
+        "description": "User's email address",
+        "format": "email"
+      },
+      "loginIdentifier": {
+        "type": "string",
+        "description": "User's login identifier",
+        "format": "text"
+      }
+    },
+    "required": ["identifier", "givenName", "familyName", "department", "password", "email", "loginIdentifier"]
+  }
+  
