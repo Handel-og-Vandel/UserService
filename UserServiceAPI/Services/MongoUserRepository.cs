@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace Services;
@@ -15,24 +12,28 @@ public class MongoUserRepository : IUserRepository
     public MongoUserRepository(ILogger<MongoUserRepository> logger, IConfiguration configuration)
     {
         _logger = logger;
-        
+
         // Add MongoDB settings to the configuration
         var connectionString = configuration["MongoConnectionString"];
         var databaseName = configuration["DatabaseName"];
         var collectionName = configuration["CollectionName"];
 
-        _logger.LogInformation($"Using: {connectionString} + {databaseName} + {collectionName}");
+        _logger.LogInformation("Using: {connectionString}, {databaseName}, {collectionName}", connectionString, databaseName, collectionName);
 
-        try {
+        try
+        {
             var client = new MongoClient(connectionString);
             var database = client.GetDatabase(databaseName);
             _userCollection = database.GetCollection<User>(collectionName);
-        } 
+        }
         catch (Exception ex)
         {
-            Console.WriteLine($"{ex.Message}");
+            _logger.LogError(ex, "Error connecting to MongoDB");
+            throw;
         }
-        
+
+        _logger.LogInformation("Connected to MongoDB");
+
     }
 
     public async Task<User> CreateUserAsync(User user)
@@ -44,8 +45,14 @@ public class MongoUserRepository : IUserRepository
             {
                 throw new Exception("User with this login identifier already exists");
             }
+            else
+            {
+                user.Salt = Guid.NewGuid().ToString();
+                user.Password = ComputeSHA256Hash(user.Password + user.Salt);
+                await _userCollection.InsertOneAsync(user);
+            }
         }
- 
+
         return user;
     }
 
@@ -55,12 +62,12 @@ public class MongoUserRepository : IUserRepository
         return await _userCollection.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<User> > GetAllUsersAsync()
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
         return await _userCollection.Find(_ => true).ToListAsync();
     }
 
-    public async Task<IEnumerable<User> > GetUsersByDepartmentAsync(string department)
+    public async Task<IEnumerable<User>> GetUsersByDepartmentAsync(string department)
     {
         var filter = Builders<User>.Filter.Eq("department", department);
         return await _userCollection.Find(filter).ToListAsync();
