@@ -1,0 +1,36 @@
+
+services:
+  userservice:
+    image: hnrkjnsn/userservice:dev
+    build:
+      context: ../UserServiceAPI
+      dockerfile: Dockerfile
+    ports:
+      - 5001:8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoConnectionString=mongodb://admin:haav1234@mongodb:27017/?authSource=admin
+      - DatabaseName=userdb
+      - CollectionName=users
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: haav1234
+      MONGO_INITDB_DATABASE: haavdb
+    volumes:
+      - haav_mongodb_data_dev:/data/db
+
+volumes:
+  haav_mongodb_data_dev:
+
+networks:
+  default:
+    name: haav-dev
+    external: false
