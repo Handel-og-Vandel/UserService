@@ -1,4 +1,6 @@
-# Howto TaxaManager
+# HaaV User Service
+
+This project implements a user service for managing the users that have access to the HaaV systems.
 
 ## Setup environment
 
