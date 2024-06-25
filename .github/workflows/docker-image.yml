@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-    - UserService/**
+    - UserServiceApi/**
 
 jobs:
 
@@ -25,6 +25,6 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build the Docker image
-      run: docker build . --file UserService/Dockerfile --tag ${DOCKER_USER}/userservice:latest
+      run: docker build . --file UserServiceApi/Dockerfile --tag ${DOCKER_USER}/userservice:latest
     - name: Push Docker image to Docker Hub
       run: docker push ${DOCKER_USER}/userservice:latest
